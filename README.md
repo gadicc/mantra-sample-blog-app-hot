@@ -1,3 +1,9 @@
+# mantra-sample-blog-app-hot
+
+This is the `mantra-sample-blog-app` with hotloading added in.  You can clone
+and run this directly, or
+[look at the changes](https://github.com/gadicc/mantra-sample-blog-app-hot/compare/master...gadicc:hot) necessary to make to the original.
+
 ## A Sample Blog App Written in Mantra
 
 This is a sample blog app written in [Mantra](https://github.com/kadirahq/mantra) covering core features of it.
