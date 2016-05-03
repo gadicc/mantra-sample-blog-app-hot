@@ -73,6 +73,10 @@ if (module.hot) {
     './containers/post',
     './containers/newpost',
   ], function () {
+    // If any of the above files (or their dependencies) are updated, all we
+    // really need to do is re-run the current route's action() method, which
+    // will require() the updated modules and re-mount MainLayoutCtx
+    // (which itself require()'s the updated MainLayout at render time).
     localFlowRouter._current.route._action();
   });
 }
