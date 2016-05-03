@@ -2,10 +2,10 @@ import React from 'react';
 import {mount} from 'react-mounter';
 import { AppContainer } from 'react-hot-loader';
 
-import origMainLayout from './components/main_layout';
-import PostList from './containers/postlist';
-import Post from './containers/post';
-import NewPost from './containers/newpost';
+// import MainLayout from './components/main_layout';
+// import PostList from './containers/postlist';
+// import Post from './containers/post';
+// import NewPost from './containers/newpost';
 
 // Optional, but helpful
 import Redbox from 'redbox-react';
@@ -15,60 +15,30 @@ const consoleErrorReporter = ({error}) => {
   return <Redbox error={error} />;
 };
 consoleErrorReporter.propTypes = {
-// not in react 0.14
-//  error: React.PropTypes.error
+  error: React.PropTypes.instanceOf(Error).isRequired
 };
 
-// Temporary, to avoid superflous warnings
-let wasCreateElementPatched = false;
-const A = () => {};
-A.__source = { fileName: 'fake', localName: 'fake' }
-const B = () => {};
-B.__source = { fileName: 'fake', localName: 'fake' }
-if (<A />.type === <B />.type) {
-  wasCreateElementPatched = true;
-}
-if (!wasCreateElementPatched) {
-  // See client/modules/comments/components/index.js
-  console.warn("NB: Currently we are not using react-hot-loader with Mantra, " +
-    "because something is breaking.  HMR will still work, but state stored " +
-    "inside components will be lost.  Tracking in " +
-    "https://github.com/gadicc/meteor-hmr/issues/60");
-}
-
-/*
- * We need to store these outside the funcs so we can use them to re-render
- * an existing route's action (with it's own closures) on hot update.
- */
-var MainLayoutCtx;
+// So we can call FlowRotuer again later during hot reload
 var localFlowRouter;
-var localInjectDeps;
-function createMainLayoutCtx(MainLayout) {
-  MainLayoutCtx = function(props) {
-    if (wasCreateElementPatched)
-      return (
-        <AppContainer
-          component={ localInjectDeps(MainLayout) }
-          errorReporter={consoleErrorReporter}
-          props={props}
-        />
-      );
-    else {
-      const MainLayoutCtx = localInjectDeps(MainLayout);
-      return ( <MainLayoutCtx {...props} /> );
-    }
-  };
-}
 
 export default function (injectDeps, {FlowRouter}) {
   // MainLayoutCtx = injectDeps(MainLayout);
-  localInjectDeps = injectDeps;
   localFlowRouter = FlowRouter;
-  createMainLayoutCtx(origMainLayout);
+
+  const MainLayoutCtx = function(props) {
+    const MainLayout = require('./components/main_layout').default;
+    const MainLayoutCtx = injectDeps(MainLayout);
+    return (
+      <AppContainer errorReporter={consoleErrorReporter}>
+        <MainLayoutCtx {...props} />
+      </AppContainer>
+    );
+  };
 
   FlowRouter.route('/', {
     name: 'posts.list',
     action() {
+      const PostList = require('./containers/postlist').default;
       mount(MainLayoutCtx, {
         content: () => (<PostList />)
       });
@@ -78,6 +48,7 @@ export default function (injectDeps, {FlowRouter}) {
   FlowRouter.route('/post/:postId', {
     name: 'posts.single',
     action({postId}) {
+      const Post = require('./containers/post').default;
       mount(MainLayoutCtx, {
         content: () => (<Post postId={postId}/>)
       });
@@ -87,6 +58,7 @@ export default function (injectDeps, {FlowRouter}) {
   FlowRouter.route('/new-post', {
     name: 'newpost',
     action() {
+      const NewPost = require('./containers/newpost').default;
       mount(MainLayoutCtx, {
         content: () => (<NewPost/>)
       });
@@ -95,9 +67,12 @@ export default function (injectDeps, {FlowRouter}) {
 }
 
 if (module.hot) {
-  module.hot.accept('./components/main_layout', function () {
-    const nextMainLayout = require('./components/main_layout').default;
-    createMainLayoutCtx(nextMainLayout);
+  module.hot.accept([
+    './components/main_layout',
+    './containers/postlist',
+    './containers/post',
+    './containers/newpost',
+  ], function () {
     localFlowRouter._current.route._action();
   });
 }

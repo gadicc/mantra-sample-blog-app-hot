@@ -27,6 +27,7 @@
     "mocha": "2.x.x",
     "raw-loader": "^0.5.1",
     "react-addons-test-utils": "^15.0.0",
+    "react-hot-loader": "^3.0.0-beta.1",
     "redbox-react": "^1.2.3",
     "sinon": "1.17.x",
     "style-loader": "^0.13.1"
