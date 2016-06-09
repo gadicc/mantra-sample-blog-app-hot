@@ -24,9 +24,9 @@ ecmascript-runtime@0.2.11-rc.4
 ejson@1.0.12-rc.4
 es5-shim@4.5.11-rc.4
 fastclick@1.0.12-rc.4
-gadicc:ecmascript-hot@2.0.0-beta.4
+gadicc:ecmascript-hot@2.0.0-beta.5
 gadicc:hot@2.0.0-beta.2
-gadicc:hot-build@2.0.0-beta.4
+gadicc:hot-build@2.0.0-beta.5
 gadicc:modules-runtime-hot@0.6.4-beta.0
 gadicc:package-json@1.0.4
 geojson-utils@1.0.9-rc.4
